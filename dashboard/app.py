@@ -10,14 +10,14 @@ app = Flask(__name__)
 def index():
     if request.method == 'POST':
         rpm = int(request.form['rpm'])
-        print("Form submitted")
-        print("RPM value:", rpm)
         count = rpm
         delay = 60 / rpm
 
+        # Clear alerts.txt before starting new simulation
+        open(os.path.join(os.getcwd(), 'alerts.txt'), 'w').close()
+
         def run_client():
-            print(f"Running client.py with count={count}, delay={delay}")
-            subprocess.run(['python', '../client.py', str(count), str(delay)], check=True)
+            subprocess.run(['python', 'client.py', str(count), str(delay)])
 
         threading.Thread(target=run_client).start()
 
