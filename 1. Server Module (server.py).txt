@@ -1,0 +1,59 @@
+ 1. Server Module (server.py)
+🔹 Purpose:
+Acts as the central system that:
+- Accepts incoming connections
+- Monitors connection frequency
+- Detects suspicious spikes (potential DoS)
+- Logs alerts to a file
+🔹 Key Features:
+- Uses Python’s socket to listen on port 9999
+- Tracks connections per IP using a timestamp list
+- Triggers alerts if an IP exceeds X connections in Y seconds
+- Logs alerts to alerts.txt for dashboard visualization
+🔹 Sample Behavior:
+🚨 ALERT: High connection rate from 127.0.0.1 (6 in 10s)
+Received from 127.0.0.1: Hello Server #1
+
+
+
+🧩 2. Client Module (client.py)
+🔹 Purpose:
+Simulates a normal user or attacker trying to connect to the server.
+🔹 Key Features:
+- Connects to the server via socket
+- Sends a message like "Hello Server"
+- Receives acknowledgment (ACK)
+- Can be run manually or in a loop to simulate bursts
+🔹 Sample Behavior:
+Server replied: ACK
+Server replied: ACK
+
+
+You can run it repeatedly or automate it to simulate traffic.
+
+🧩 3. Attacking Module (Simulated via Burst Client)
+🔹 Purpose:
+Simulates a Denial of Service (DoS) attack by flooding the server with rapid connections.
+🔹 How You Did It:
+You modified client.py to send multiple requests quickly:
+for i in range(6):
+    connect to server
+    send message
+    wait 1 second
+
+
+This triggers the server’s alert logic when the threshold is crossed.
+🔹 Why It’s Important:
+- Demonstrates how DoS attacks work
+- Validates your detection logic
+- Creates real data for your dashboard
+
+🧠 How They Work Together
+|  |  |  | 
+|  |  |  | 
+|  |  |  | 
+|  |  |  | 
+
+
+
+You’ve built a full simulation: a working server, a client that can behave normally or maliciously, and a dashboard that visu

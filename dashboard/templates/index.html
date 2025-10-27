@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DoS Simulation Dashboard</title>
+</head>
+<body>
+  <h2>Simulate Requests</h2>
+  <form method="POST">
+    <label>Requests per Minute:</label>
+    <input type="number" name="rpm" min="1" required>
+    <button type="submit">Start Simulation</button>
+  </form>
+
+  <h3>Live Connection Alerts</h3>
+  <canvas id="trafficChart" width="600" height="300"></canvas>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const ctx = document.getElementById('trafficChart').getContext('2d');
+    const trafficChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Connection Alerts',
+          data: [],
+          borderColor: 'red',
+          fill: false
+        }]
+      },
+      options: {
+        scales: {
+          x: { title: { display: true, text: 'Time' }},
+          y: { title: { display: true, text: 'Connections' }}
+        }
+      }
+    });
+
+    function fetchData() {
+      fetch('/data')
+        .then(response => response.json())
+        .then(result => {
+          trafficChart.data.labels = result.labels;
+          trafficChart.data.datasets[0].data = result.data;
+          trafficChart.update();
+        });
+    }
+
+    setInterval(fetchData, 3000); // Refresh every 3 seconds
+  </script>
+</body>
+</html>
