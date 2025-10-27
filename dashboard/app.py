@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, jsonify
 import subprocess
 import threading
+import os
+print("Current working directory:", os.getcwd())
 
 app = Flask(__name__)
 
@@ -15,7 +17,7 @@ def index():
 
         def run_client():
             print(f"Running client.py with count={count}, delay={delay}")
-            subprocess.run(['python', '../client.py', str(count), str(delay)])
+            subprocess.run(['python', '../client.py', str(count), str(delay)], check=True)
 
         threading.Thread(target=run_client).start()
 
@@ -24,7 +26,7 @@ def index():
 @app.route('/data')
 def get_data():
     try:
-        with open('../alerts.txt', 'r') as f:
+        with open(os.path.join(os.getcwd(), 'alerts.txt'), 'r') as f:
             lines = f.readlines()[-10:]  # Last 10 alerts
         timestamps = []
         counts = []
