@@ -2,29 +2,83 @@
 <html>
 <head>
   <title>DoS Simulation Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    canvas {
+      margin-bottom: 30px;
+    }
+    form {
+      margin-bottom: 40px;
+    }
+    label {
+      margin-right: 10px;
+    }
+  </style>
 </head>
 <body>
-  <h2>Simulate Requests</h2>
-  <form method="POST">
-    <label>Requests per Minute:</label>
-    <input type="number" name="rpm" min="1" required>
-    <button type="submit">Start Simulation</button>
-  </form>
 
+  <h1>DoS Simulation Dashboard</h1>
+
+  <!-- 📊 Packet Count Graph -->
+  <h2>Packet Count Over Time</h2>
+  <canvas id="attackChart" width="600" height="400"></canvas>
+
+  <script>
+    const attackCtx = document.getElementById('attackChart').getContext('2d');
+    const attackChart = new Chart(attackCtx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Packet Count',
+          data: [],
+          borderColor: 'red',
+          fill: false
+        }]
+      }
+    });
+
+    function updateAttackGraph() {
+      fetch('https://dos-dashboard.onrender.com/data')
+        .then(res => res.json())
+        .then(data => {
+          attackChart.data.labels = data.labels;
+          attackChart.data.datasets[0].data = data.data;
+          attackChart.update();
+        })
+        .catch(err => console.error("Attack graph error:", err));
+    }
+
+    setInterval(updateAttackGraph, 5000); // Refresh every 5 seconds
+  </script>
+
+  <!-- 🧪 Simulation Form -->
+ <h2>Simulate Requests</h2>
+<form id="simulateForm">
+  <label>Requests per Minute:</label>
+  <input type="number" name="rpm" id="rpmInput" min="1" required>
+  <button type="submit">Start Simulation</button>
+</form>
+<p id="statusMessage"></p>
+
+  <!-- 🚨 Connection Alerts Graph -->
   <h3>Live Connection Alerts</h3>
   <canvas id="trafficChart" width="600" height="300"></canvas>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    const ctx = document.getElementById('trafficChart').getContext('2d');
-    const trafficChart = new Chart(ctx, {
+    const trafficCtx = document.getElementById('trafficChart').getContext('2d');
+    const trafficChart = new Chart(trafficCtx, {
       type: 'line',
       data: {
         labels: [],
         datasets: [{
           label: 'Connection Alerts',
           data: [],
-          borderColor: 'red',
+          borderColor: 'blue',
           fill: false
         }]
       },
@@ -36,17 +90,42 @@
       }
     });
 
-    function fetchData() {
-      fetch('/data')
+    function updateTrafficGraph() {
+      fetch('https://dos-dashboard.onrender.com/data')
         .then(response => response.json())
         .then(result => {
           trafficChart.data.labels = result.labels;
           trafficChart.data.datasets[0].data = result.data;
           trafficChart.update();
-        });
+        })
+        .catch(err => console.error("Traffic graph error:", err));
     }
 
-    setInterval(fetchData, 3000); // Refresh every 3 seconds
+    setInterval(updateTrafficGraph, 3000); // Refresh every 3 seconds
   </script>
+<script>
+document.getElementById('simulateForm').addEventListener('submit', function(e) {
+  e.preventDefault(); // Prevent page reload
+
+  const rpm = document.getElementById('rpmInput').value;
+  const formData = new FormData();
+  formData.append('rpm', rpm);
+
+  fetch('https://dos-dashboard.onrender.com/simulate', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.json())
+  .then(result => {
+    document.getElementById('statusMessage').textContent = "Simulation started successfully!";
+  })
+  .catch(error => {
+    console.error("Simulation error:", error);
+    document.getElementById('statusMessage').textContent = "Failed to start simulation.";
+  });
+});
+</script>
+
+
 </body>
 </html>
