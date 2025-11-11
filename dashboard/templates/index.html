@@ -64,6 +64,10 @@
   <button type="submit">Start Simulation</button>
 </form>
 <p id="statusMessage"></p>
+<!-- 🚀 Send Attack Button -->
+<h2>Trigger Attack</h2>
+<button id="sendAttackBtn">Send Attack</button>
+<p id="attackStatus"></p>
 
   <!-- 🚨 Connection Alerts Graph -->
   <h3>Live Connection Alerts</h3>
@@ -122,6 +126,21 @@ document.getElementById('simulateForm').addEventListener('submit', function(e) {
   .catch(error => {
     console.error("Simulation error:", error);
     document.getElementById('statusMessage').textContent = "Failed to start simulation.";
+  });
+});
+</script>
+<script>
+document.getElementById("sendAttackBtn").addEventListener("click", () => {
+  fetch("https://dos-dashboard.onrender.com/send_attack", {
+    method: "POST"
+  })
+  .then(response => response.json())
+  .then(data => {
+    document.getElementById("attackStatus").textContent = data.message;
+  })
+  .catch(error => {
+    console.error("Attack error:", error);
+    document.getElementById("attackStatus").textContent = "Failed to send attack.";
   });
 });
 </script>
