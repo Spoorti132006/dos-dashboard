@@ -13,6 +13,11 @@ print("Current working directory:", os.getcwd())
 @app.route('/', methods=['GET'])
 def index():
     return "DoS Dashboard backend is running."
+@app.route('/send_attack', methods=['POST'])
+def send_attack():
+    return jsonify({"message": "Attack sent successfully!"})
+
+
 
 # 🚀 Simulation trigger route
 @app.route('/simulate', methods=['POST'])
