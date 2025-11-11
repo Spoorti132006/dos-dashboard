@@ -5,7 +5,7 @@ import threading
 import os
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 print("Current working directory:", os.getcwd())
 
