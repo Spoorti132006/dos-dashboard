@@ -15,9 +15,19 @@ def index():
     return "DoS Dashboard backend is running."
 @app.route('/send_attack', methods=['POST'])
 def send_attack():
-    return jsonify({"message": "Attack sent successfully!"})
+    try:
+        # You can customize count and delay here
+        count = 50
+        delay = 0.5
 
+        def run_attack():
+            subprocess.run(['python', 'client.py', str(count), str(delay)])
 
+        threading.Thread(target=run_attack).start()
+        return jsonify({"message": "Attack sent successfully!"})
+    except Exception as e:
+        print("Attack error:", e)
+        return jsonify({"message": "Attack failed", "error": str(e)}), 500
 
 # 🚀 Simulation trigger route
 @app.route('/simulate', methods=['POST'])
